@@ -1,0 +1,1019 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>今日落地 Daily Grounding</title>
+  <meta name="description" content="一个安静的每日学习、论文、身体照顾和复盘记录工具。">
+  <meta name="theme-color" content="#f7f5f0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="今日落地">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="icon" href="icons/icon-192.png">
+  <style>
+    :root {
+      --bg: #f7f5f0;
+      --paper: #fffdfa;
+      --ink: #262b25;
+      --muted: #667064;
+      --line: #ded8cc;
+      --soft: #eef1ea;
+      --accent: #516d5c;
+      --accent-strong: #355244;
+      --danger: #9b5148;
+      --focus: rgba(81, 109, 92, 0.2);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      line-height: 1.55;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      color: var(--ink);
+      cursor: pointer;
+      min-height: 40px;
+      padding: 8px 13px;
+    }
+
+    button:hover {
+      border-color: var(--accent);
+    }
+
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    button.primary:hover {
+      background: var(--accent-strong);
+    }
+
+    button.danger {
+      color: var(--danger);
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--ink);
+      padding: 9px 10px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--focus);
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: calc(28px + env(safe-area-inset-top)) 18px calc(48px + env(safe-area-inset-bottom));
+    }
+
+    header {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 650;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 7px 0 0;
+      color: var(--muted);
+    }
+
+    .date-tools {
+      display: grid;
+      gap: 8px;
+      min-width: 220px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 24px;
+      margin-top: 24px;
+      align-items: start;
+    }
+
+    main {
+      display: grid;
+      gap: 18px;
+    }
+
+    aside {
+      position: sticky;
+      top: 18px;
+      display: grid;
+      gap: 14px;
+      border-left: 1px solid var(--line);
+      padding-left: 20px;
+    }
+
+    section,
+    .side-block {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+
+    section h2,
+    .side-block h2 {
+      margin: 0 0 14px;
+      font-size: 18px;
+      font-weight: 650;
+    }
+
+    .progress-row {
+      display: grid;
+      grid-template-columns: 100px 120px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 44px;
+      gap: 10px;
+      align-items: end;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .progress-row:last-child {
+      border-bottom: 0;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .remove {
+      padding: 8px;
+      width: 44px;
+    }
+
+    .inline-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .checks,
+    .radios {
+      display: grid;
+      gap: 10px;
+    }
+
+    .checks {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .option-grid {
+      margin-bottom: 14px;
+    }
+
+    .check-item,
+    .radio-item {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 8px 10px;
+      color: var(--ink);
+    }
+
+    .field-group {
+      margin-top: 14px;
+    }
+
+    .field-group:first-child {
+      margin-top: 0;
+    }
+
+    .section-note {
+      color: var(--muted);
+      font-size: 14px;
+      margin: -4px 0 14px;
+    }
+
+    .check-item input,
+    .radio-item input {
+      width: auto;
+      margin: 0;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .review-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .summary {
+      white-space: pre-wrap;
+      min-height: 112px;
+      color: var(--ink);
+      background: var(--soft);
+      border: 1px solid #d8dfd3;
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 8px;
+      max-height: 420px;
+      overflow: auto;
+    }
+
+    .history-list button {
+      width: 100%;
+      text-align: left;
+      background: #fff;
+    }
+
+    .history-list button.active {
+      border-color: var(--accent);
+      background: var(--soft);
+    }
+
+    .save-status {
+      color: var(--muted);
+      min-height: 24px;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .empty-note {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    @media (max-width: 880px) {
+      header,
+      .layout,
+      .split {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        position: static;
+        border-left: 0;
+        padding-left: 0;
+      }
+
+      .checks,
+      .progress-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .app {
+        padding: 18px 12px 36px;
+      }
+
+      section,
+      .side-block {
+        padding: 14px;
+      }
+
+      .progress-row {
+        grid-template-columns: 1fr;
+      }
+
+      .remove {
+        width: 100%;
+      }
+
+      .checks {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>今日落地 Daily Grounding</h1>
+        <p class="subtitle">低成本记录学习、论文和生活状态，把每天的事情踏实往前推一点。</p>
+      </div>
+      <div class="date-tools">
+        <label for="recordDate">当前日期</label>
+        <input id="recordDate" type="date">
+      </div>
+    </header>
+
+    <div class="layout">
+      <main>
+        <section aria-labelledby="progressTitle">
+          <h2 id="progressTitle">今日推进</h2>
+          <p class="section-note">记录真正往前推了一点的事情，不记录时长。</p>
+          <div id="progressList"></div>
+          <div class="inline-actions">
+            <button type="button" id="addProgress">添加推进记录</button>
+          </div>
+        </section>
+
+        <section aria-labelledby="careTitle">
+          <h2 id="careTitle">身体照顾</h2>
+          <div class="field-group">
+            <label>营养照顾</label>
+            <div id="nutritionChoices" class="checks option-grid"></div>
+          </div>
+          <div class="field-group">
+            <label>喝水状态</label>
+            <div id="waterStatusOptions" class="radios option-grid"></div>
+          </div>
+          <div class="field-group">
+            <label for="dietNotes">饮食备注</label>
+            <textarea id="dietNotes" placeholder="可选：简单写一两句就好"></textarea>
+          </div>
+          <div class="field-group">
+            <label>运动状态</label>
+            <div id="exerciseLevelOptions" class="radios option-grid"></div>
+          </div>
+          <div class="field-group">
+            <label>运动项目</label>
+            <div id="exerciseItemChoices" class="checks option-grid"></div>
+          </div>
+          <div class="field-group">
+            <label for="bodyFeeling">身体感受</label>
+            <textarea id="bodyFeeling" placeholder="可选：疲惫、轻松、胃口、睡眠等"></textarea>
+          </div>
+        </section>
+
+        <section aria-labelledby="reviewTitle">
+          <h2 id="reviewTitle">晚上复盘</h2>
+          <div class="review-grid">
+            <div>
+              <label for="advancedToday">今天真正推进了什么？</label>
+              <textarea id="advancedToday"></textarea>
+            </div>
+            <div>
+              <label for="steadyThing">今天让我比较踏实的一件事是什么？</label>
+              <textarea id="steadyThing"></textarea>
+            </div>
+            <div>
+              <label for="tomorrowStep">明天我可以先做哪一个最小动作？</label>
+              <textarea id="tomorrowStep"></textarea>
+            </div>
+          </div>
+          <div class="split">
+            <div class="field-group">
+              <label>落地程度</label>
+              <div id="groundLevelOptions" class="radios"></div>
+            </div>
+            <div class="field-group">
+              <label>行动优先度</label>
+              <div id="actionPriorityOptions" class="radios"></div>
+            </div>
+            <div class="field-group">
+              <label>情绪稳定度</label>
+              <div id="emotionalStabilityOptions" class="radios"></div>
+            </div>
+            <div class="field-group">
+              <label>身体支撑感</label>
+              <div id="bodySupportOptions" class="radios"></div>
+            </div>
+          </div>
+        </section>
+
+        <section aria-labelledby="summaryTitle">
+          <h2 id="summaryTitle">今日小结</h2>
+          <div id="summaryText" class="summary"></div>
+          <div class="inline-actions">
+            <button type="button" id="generateSummary">生成今日小结</button>
+            <button type="button" id="saveRecord" class="primary">保存今日记录</button>
+          </div>
+          <p id="saveStatus" class="save-status" aria-live="polite"></p>
+        </section>
+      </main>
+
+      <aside>
+        <div class="side-block">
+          <h2>历史记录</h2>
+          <div id="historyList" class="history-list"></div>
+          <p id="emptyHistory" class="empty-note">还没有保存过记录。</p>
+        </div>
+        <div class="side-block">
+          <h2>当前记录</h2>
+          <p class="empty-note">选择日期后可查看或编辑那一天。保存会覆盖该日期的内容。</p>
+          <div class="inline-actions">
+            <button type="button" id="todayButton">回到今天</button>
+            <button type="button" id="clearDay" class="danger">清空当前页</button>
+          </div>
+        </div>
+        <div class="side-block">
+          <h2>数据备份</h2>
+          <p class="empty-note">导出 JSON 可备份全部历史记录；导入会合并到当前浏览器数据。</p>
+          <div class="inline-actions">
+            <button type="button" id="exportData">导出 JSON</button>
+            <button type="button" id="importData">导入 JSON</button>
+          </div>
+          <input id="importFile" class="visually-hidden" type="file" accept="application/json,.json">
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "daily-grounding-records-v1";
+    const MAIN_LINES = ["考公", "法考", "论文"];
+    const TASK_TYPES = ["听课", "阅读", "刷题", "复盘", "材料收集", "整理", "写作", "修改", "其他"];
+    const NUTRITION_OPTIONS = ["鸡蛋", "牛奶", "酸奶", "豆制品", "鱼虾", "鸡肉", "牛肉", "猪肉", "绿叶菜", "菌菇", "其他蔬菜", "水果", "其他"];
+    const WATER_STATUS = ["未达标", "基本达标", "达标"];
+    const EXERCISE_LEVELS = ["没动", "轻微活动", "正式运动"];
+    const EXERCISE_ITEMS = ["散步", "拉伸", "打羽毛球", "其他"];
+    const OBSERVATIONS = {
+      groundLevel: ["很难落地", "部分落地", "比较落地"],
+      actionPriority: ["想得多、行动少", "边想边做", "先做起来"],
+      emotionalStability: ["比较悬浮或波动", "有起伏但能回来", "相对平稳踏实"],
+      bodySupport: ["身体被忽略", "有基本照顾", "支撑感不错"]
+    };
+
+    const progressList = document.getElementById("progressList");
+    const historyList = document.getElementById("historyList");
+    const emptyHistory = document.getElementById("emptyHistory");
+    const recordDate = document.getElementById("recordDate");
+    const saveStatus = document.getElementById("saveStatus");
+    const summaryText = document.getElementById("summaryText");
+
+    const fields = {
+      dietNotes: document.getElementById("dietNotes"),
+      bodyFeeling: document.getElementById("bodyFeeling"),
+      advancedToday: document.getElementById("advancedToday"),
+      steadyThing: document.getElementById("steadyThing"),
+      tomorrowStep: document.getElementById("tomorrowStep")
+    };
+
+    let activeRawRecord = null;
+
+    function todayString() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function emptyRecord() {
+      return {
+        version: 2,
+        progress: [],
+        care: {
+          nutrition: [],
+          waterStatus: "",
+          dietNotes: "",
+          exerciseLevel: "",
+          exerciseItems: [],
+          bodyFeeling: ""
+        },
+        review: {
+          advancedToday: "",
+          steadyThing: "",
+          tomorrowStep: "",
+          observations: {
+            groundLevel: "",
+            actionPriority: "",
+            emotionalStability: "",
+            bodySupport: ""
+          }
+        },
+        summary: ""
+      };
+    }
+
+    function readStore() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+      } catch {
+        return {};
+      }
+    }
+
+    function writeStore(store) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+    }
+
+    function exportData() {
+      const data = {
+        app: "今日落地 Daily Grounding",
+        version: 2,
+        exportedAt: new Date().toISOString(),
+        records: readStore()
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `daily-grounding-${todayString()}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      saveStatus.textContent = "已导出 JSON 备份文件。";
+    }
+
+    function importData(file) {
+      if (!file) {
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          const incoming = parsed.records && typeof parsed.records === "object" ? parsed.records : parsed;
+          const dates = Object.keys(incoming).filter(date => /^\d{4}-\d{2}-\d{2}$/.test(date));
+
+          if (!dates.length) {
+            throw new Error("没有找到可导入的日期记录。");
+          }
+
+          const store = readStore();
+          const conflicts = dates.filter(date => store[date]);
+          if (conflicts.length && !confirm(`导入文件中有 ${conflicts.length} 天会覆盖当前记录，是否继续？`)) {
+            saveStatus.textContent = "已取消导入。";
+            return;
+          }
+
+          dates.forEach(date => {
+            store[date] = incoming[date];
+          });
+          writeStore(store);
+          loadRecord(recordDate.value || todayString());
+          saveStatus.textContent = `已导入 ${dates.length} 天记录。`;
+        } catch (error) {
+          saveStatus.textContent = `导入没有完成：${error.message}`;
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function escapeAttr(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function optionHtml(options, selected) {
+      return options.map(option => `
+        <option value="${escapeAttr(option)}" ${option === selected ? "selected" : ""}>${option}</option>
+      `).join("");
+    }
+
+    function renderCheckboxGroup(containerId, name, options, selectedValues) {
+      const selected = new Set(Array.isArray(selectedValues) ? selectedValues : []);
+      document.getElementById(containerId).innerHTML = options.map(option => `
+        <label class="check-item">
+          <input name="${name}" type="checkbox" value="${escapeAttr(option)}" ${selected.has(option) ? "checked" : ""}>
+          ${option}
+        </label>
+      `).join("");
+    }
+
+    function renderRadioGroup(containerId, name, options, selectedValue) {
+      document.getElementById(containerId).innerHTML = options.map(option => `
+        <label class="radio-item">
+          <input name="${name}" type="radio" value="${escapeAttr(option)}" ${option === selectedValue ? "checked" : ""}>
+          ${option}
+        </label>
+      `).join("");
+    }
+
+    function checkedValues(name) {
+      return Array.from(document.querySelectorAll(`input[name='${name}']:checked`)).map(input => input.value);
+    }
+
+    function radioValue(name) {
+      const selected = document.querySelector(`input[name='${name}']:checked`);
+      return selected ? selected.value : "";
+    }
+
+    function createProgressRow(item = {}) {
+      const row = document.createElement("div");
+      row.className = "progress-row";
+      row.innerHTML = `
+        <div>
+          <label>主线任务</label>
+          <select class="progress-main">${optionHtml(MAIN_LINES, item.mainLine || MAIN_LINES[0])}</select>
+        </div>
+        <div>
+          <label>任务类型</label>
+          <select class="progress-type">${optionHtml(TASK_TYPES, item.taskType || "阅读")}</select>
+        </div>
+        <div>
+          <label>具体内容</label>
+          <input class="progress-content" type="text" placeholder="例如：资料分析速算技巧" value="${escapeAttr(item.content || "")}">
+        </div>
+        <div>
+          <label>产出物</label>
+          <input class="progress-output" type="text" placeholder="例如：整理3条材料卡片" value="${escapeAttr(item.output || "")}">
+        </div>
+        <div>
+          <label>下一步</label>
+          <input class="progress-next" type="text" placeholder="例如：明天复盘错题1-10" value="${escapeAttr(item.nextStep || "")}">
+        </div>
+        <button class="remove danger" type="button" aria-label="删除推进记录">删</button>
+      `;
+      row.querySelector(".remove").addEventListener("click", () => row.remove());
+      return row;
+    }
+
+    function setRows(container, items, createRow) {
+      container.innerHTML = "";
+      const rows = items.length ? items : [{}];
+      rows.forEach(item => container.appendChild(createRow(item)));
+    }
+
+    function mapOldTaskType(category) {
+      const map = {
+        "课程": "听课",
+        "阅读": "阅读",
+        "刷题": "刷题",
+        "项目": "整理",
+        "复盘": "复盘",
+        "写作": "写作",
+        "整理材料": "整理",
+        "项目推进": "整理",
+        "其他": "其他"
+      };
+      return map[category] || "其他";
+    }
+
+    function normalizeProgress(item = {}) {
+      return {
+        mainLine: MAIN_LINES.includes(item.mainLine) ? item.mainLine : MAIN_LINES[0],
+        taskType: TASK_TYPES.includes(item.taskType) ? item.taskType : mapOldTaskType(item.category),
+        content: item.content || "",
+        output: item.output || "",
+        nextStep: item.nextStep || ""
+      };
+    }
+
+    function normalizeRecord(raw) {
+      const blank = emptyRecord();
+      if (!raw || typeof raw !== "object") {
+        return blank;
+      }
+
+      if (raw.version === 2 || raw.progress || raw.care) {
+        const care = raw.care || {};
+        const review = raw.review || {};
+        const observations = review.observations || {};
+        return {
+          version: 2,
+          progress: Array.isArray(raw.progress) ? raw.progress.map(normalizeProgress).filter(hasProgressText) : [],
+          care: {
+            nutrition: Array.isArray(care.nutrition) ? care.nutrition.filter(item => NUTRITION_OPTIONS.includes(item)) : [],
+            waterStatus: WATER_STATUS.includes(care.waterStatus) ? care.waterStatus : "",
+            dietNotes: care.dietNotes || "",
+            exerciseLevel: EXERCISE_LEVELS.includes(care.exerciseLevel) ? care.exerciseLevel : "",
+            exerciseItems: Array.isArray(care.exerciseItems) ? care.exerciseItems.filter(item => EXERCISE_ITEMS.includes(item)) : [],
+            bodyFeeling: care.bodyFeeling || ""
+          },
+          review: {
+            advancedToday: review.advancedToday || "",
+            steadyThing: review.steadyThing || "",
+            tomorrowStep: review.tomorrowStep || "",
+            observations: {
+              groundLevel: OBSERVATIONS.groundLevel.includes(observations.groundLevel) ? observations.groundLevel : "",
+              actionPriority: OBSERVATIONS.actionPriority.includes(observations.actionPriority) ? observations.actionPriority : "",
+              emotionalStability: OBSERVATIONS.emotionalStability.includes(observations.emotionalStability) ? observations.emotionalStability : "",
+              bodySupport: OBSERVATIONS.bodySupport.includes(observations.bodySupport) ? observations.bodySupport : ""
+            }
+          },
+          summary: raw.summary || "",
+          legacy: raw.legacy
+        };
+      }
+
+      return normalizeLegacyRecord(raw);
+    }
+
+    function normalizeLegacyRecord(raw) {
+      const progress = [];
+      if (Array.isArray(raw.learning)) {
+        raw.learning.forEach(item => {
+          if (item.content) {
+            progress.push({
+              mainLine: MAIN_LINES[0],
+              taskType: mapOldTaskType(item.category),
+              content: item.content,
+              output: "",
+              nextStep: ""
+            });
+          }
+        });
+      }
+      if (Array.isArray(raw.outputs)) {
+        raw.outputs.forEach(item => {
+          if (item.content) {
+            progress.push({
+              mainLine: MAIN_LINES[0],
+              taskType: mapOldTaskType(item.category),
+              content: item.content,
+              output: item.content,
+              nextStep: ""
+            });
+          }
+        });
+      }
+
+      const oldNutrition = raw.nutrition || {};
+      const nutrition = [];
+      if (oldNutrition.protein) nutrition.push("其他");
+      if (oldNutrition.produce) nutrition.push("其他蔬菜");
+      const dietNotes = [oldNutrition.notes || "", oldNutrition.staple ? "旧记录中勾选过主食。" : ""].filter(Boolean).join(" ");
+
+      const oldExercise = raw.exercise || {};
+      const exerciseNotes = oldExercise.notes || "";
+      const exerciseItems = [];
+      if (exerciseNotes.includes("散步")) exerciseItems.push("散步");
+      if (exerciseNotes.includes("拉伸")) exerciseItems.push("拉伸");
+      if (exerciseNotes.includes("羽毛球")) exerciseItems.push("打羽毛球");
+      if (exerciseNotes && !exerciseItems.length) exerciseItems.push("其他");
+
+      const oldReview = raw.review || {};
+      const advancedToday = progress.map(item => item.content).slice(0, 3).join("；");
+
+      return {
+        version: 2,
+        progress,
+        care: {
+          nutrition,
+          waterStatus: oldNutrition.water ? "基本达标" : "",
+          dietNotes,
+          exerciseLevel: EXERCISE_LEVELS.includes(oldExercise.level) ? oldExercise.level : "",
+          exerciseItems,
+          bodyFeeling: [oldNutrition.feeling || "", oldExercise.feeling || ""].filter(Boolean).join(" ")
+        },
+        review: {
+          advancedToday,
+          steadyThing: oldReview.steadyThing || "",
+          tomorrowStep: oldReview.tomorrowStep || "",
+          observations: {
+            groundLevel: "",
+            actionPriority: "",
+            emotionalStability: "",
+            bodySupport: ""
+          }
+        },
+        summary: "",
+        legacy: raw
+      };
+    }
+
+    function hasProgressText(item) {
+      return Boolean(item.content || item.output || item.nextStep);
+    }
+
+    function collectRecord() {
+      const record = {
+        version: 2,
+        progress: Array.from(document.querySelectorAll(".progress-row"))
+          .map(row => ({
+            mainLine: row.querySelector(".progress-main").value,
+            taskType: row.querySelector(".progress-type").value,
+            content: row.querySelector(".progress-content").value.trim(),
+            output: row.querySelector(".progress-output").value.trim(),
+            nextStep: row.querySelector(".progress-next").value.trim()
+          }))
+          .filter(hasProgressText),
+        care: {
+          nutrition: checkedValues("nutrition"),
+          waterStatus: radioValue("waterStatus"),
+          dietNotes: fields.dietNotes.value.trim(),
+          exerciseLevel: radioValue("exerciseLevel"),
+          exerciseItems: checkedValues("exerciseItem"),
+          bodyFeeling: fields.bodyFeeling.value.trim()
+        },
+        review: {
+          advancedToday: fields.advancedToday.value.trim(),
+          steadyThing: fields.steadyThing.value.trim(),
+          tomorrowStep: fields.tomorrowStep.value.trim(),
+          observations: {
+            groundLevel: radioValue("groundLevel"),
+            actionPriority: radioValue("actionPriority"),
+            emotionalStability: radioValue("emotionalStability"),
+            bodySupport: radioValue("bodySupport")
+          }
+        },
+        summary: summaryText.textContent.trim()
+      };
+
+      if (activeRawRecord && activeRawRecord.legacy) {
+        record.legacy = activeRawRecord.legacy;
+      } else if (activeRawRecord && activeRawRecord.version !== 2 && !activeRawRecord.progress && !activeRawRecord.care) {
+        record.legacy = activeRawRecord;
+      }
+
+      return record;
+    }
+
+    function loadRecord(date) {
+      const store = readStore();
+      activeRawRecord = store[date] || null;
+      const record = normalizeRecord(activeRawRecord);
+      loadIntoForm(record, store[date] ? "已载入这一天的记录，可以继续编辑。" : "这一天还没有保存记录。");
+      renderHistory();
+    }
+
+    function saveRecord() {
+      const store = readStore();
+      const date = recordDate.value || todayString();
+      const record = collectRecord();
+      record.summary = buildSummary(record);
+      summaryText.textContent = record.summary;
+      store[date] = record;
+      activeRawRecord = record;
+      writeStore(store);
+      saveStatus.textContent = "已保存到本机浏览器。";
+      renderHistory();
+    }
+
+    function clearCurrentDay() {
+      activeRawRecord = null;
+      loadIntoForm(emptyRecord(), "当前页面已清空，保存后才会覆盖历史记录。");
+    }
+
+    function loadIntoForm(record, status) {
+      setRows(progressList, record.progress || [], createProgressRow);
+      renderCheckboxGroup("nutritionChoices", "nutrition", NUTRITION_OPTIONS, record.care.nutrition);
+      renderRadioGroup("waterStatusOptions", "waterStatus", WATER_STATUS, record.care.waterStatus);
+      renderRadioGroup("exerciseLevelOptions", "exerciseLevel", EXERCISE_LEVELS, record.care.exerciseLevel);
+      renderCheckboxGroup("exerciseItemChoices", "exerciseItem", EXERCISE_ITEMS, record.care.exerciseItems);
+      renderRadioGroup("groundLevelOptions", "groundLevel", OBSERVATIONS.groundLevel, record.review.observations.groundLevel);
+      renderRadioGroup("actionPriorityOptions", "actionPriority", OBSERVATIONS.actionPriority, record.review.observations.actionPriority);
+      renderRadioGroup("emotionalStabilityOptions", "emotionalStability", OBSERVATIONS.emotionalStability, record.review.observations.emotionalStability);
+      renderRadioGroup("bodySupportOptions", "bodySupport", OBSERVATIONS.bodySupport, record.review.observations.bodySupport);
+
+      fields.dietNotes.value = record.care.dietNotes;
+      fields.bodyFeeling.value = record.care.bodyFeeling;
+      fields.advancedToday.value = record.review.advancedToday;
+      fields.steadyThing.value = record.review.steadyThing;
+      fields.tomorrowStep.value = record.review.tomorrowStep;
+      summaryText.textContent = record.summary || buildSummary(record);
+      saveStatus.textContent = status;
+    }
+
+    function listText(items) {
+      if (!items.length) return "";
+      if (items.length === 1) return items[0];
+      if (items.length === 2) return `${items[0]}和${items[1]}`;
+      return `${items.slice(0, -1).join("、")}和${items[items.length - 1]}`;
+    }
+
+    function buildSummary(record) {
+      const normalized = normalizeRecord(record);
+      const lines = MAIN_LINES.filter(line => normalized.progress.some(item => item.mainLine === line));
+      const outputCount = normalized.progress.filter(item => item.output).length;
+      const nextStep = normalized.review.tomorrowStep || (normalized.progress.find(item => item.nextStep) || {}).nextStep;
+
+      const lineText = lines.length ? `今天推进了${listText(lines)}` : "今天还没有记录主线推进";
+      let bodyText = "身体照顾还没有记录";
+      if (normalized.care.nutrition.length || normalized.care.waterStatus || normalized.care.exerciseLevel) {
+        bodyText = "身体照顾有记录";
+      }
+      if (normalized.care.nutrition.length >= 3 && ["基本达标", "达标"].includes(normalized.care.waterStatus)) {
+        bodyText = "身体照顾基本完成";
+      }
+      if (normalized.care.exerciseLevel && normalized.care.exerciseLevel !== "没动") {
+        bodyText += "，也有活动";
+      }
+
+      const tomorrowText = nextStep ? `明天可以先从“${nextStep}”开始。` : "明天可以再补一个最小动作。";
+      return `${lineText}，留下了${outputCount}项产出。${bodyText}。${tomorrowText}`;
+    }
+
+    function renderHistory() {
+      const store = readStore();
+      const dates = Object.keys(store).sort().reverse();
+      historyList.innerHTML = "";
+      emptyHistory.style.display = dates.length ? "none" : "block";
+
+      dates.forEach(date => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = date;
+        button.className = date === recordDate.value ? "active" : "";
+        button.addEventListener("click", () => {
+          recordDate.value = date;
+          loadRecord(date);
+        });
+        historyList.appendChild(button);
+      });
+    }
+
+    document.getElementById("addProgress").addEventListener("click", () => {
+      progressList.appendChild(createProgressRow());
+    });
+
+    document.getElementById("generateSummary").addEventListener("click", () => {
+      summaryText.textContent = buildSummary(collectRecord());
+      saveStatus.textContent = "已生成小结，保存后会和当天记录一起保留。";
+    });
+
+    document.getElementById("saveRecord").addEventListener("click", saveRecord);
+
+    document.getElementById("todayButton").addEventListener("click", () => {
+      recordDate.value = todayString();
+      loadRecord(recordDate.value);
+    });
+
+    document.getElementById("clearDay").addEventListener("click", clearCurrentDay);
+
+    document.getElementById("exportData").addEventListener("click", exportData);
+
+    document.getElementById("importData").addEventListener("click", () => {
+      document.getElementById("importFile").click();
+    });
+
+    document.getElementById("importFile").addEventListener("change", event => {
+      importData(event.target.files[0]);
+      event.target.value = "";
+    });
+
+    recordDate.addEventListener("change", () => {
+      loadRecord(recordDate.value || todayString());
+    });
+
+    recordDate.value = todayString();
+    loadRecord(recordDate.value);
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
